@@ -8,23 +8,27 @@ document.addEventListener('keydown', keyDownEvent);
 
 var birdSize = 20;
 
-var birdX = canvas.width / 3;
+var birdX = canvas.width / 4;
 
-var birdY = canvas.height / 2;
+var birdY = canvas.height / 3;
 
 //draw pipe
 
-var pipeWidth = 20;
+var pipeWidth = 50;
 
-var pipeHeight = 20;
+// var pipeHeight = 200;
 
-var pipeX = canvas.width / 2;
+var pipeX = [];
+
+var cont = canvas.width / 2;
 
 var pipeY = 0;
 
 var pipeTotal = 10;
 
-var gapPipe = 50;
+var pipeGap = 50;
+
+var maxRandomTopPipe = canvas.height - 50 - pipeGap;
 
 var topPipeHeight = [];
 
@@ -33,6 +37,14 @@ var topPipeHeight = [];
 var gravity = 15;
 
 var speed = 20;
+
+//random Pipes
+for (var i = 0; i < pipeTotal; i++) {
+	var randomHeight = Math.floor(Math.random() * maxRandomTopPipe);
+	pipeX.push(cont);
+	cont += 150;
+	topPipeHeight.push(randomHeight);
+}
 
 function drawBird() {
 	ctx.beginPath();
@@ -47,20 +59,16 @@ function drawBird() {
 }
 
 function drawPipe() {
-	ctx.beginPath();
+	for (var i = 0; i < pipeTotal; i++) {
+		ctx.beginPath();
 
-	ctx.rect(pipeX, pipeY, pipeWidth, pipeHeight);
+		ctx.rect(pipeX[i], pipeY, pipeWidth, topPipeHeight[i]);
 
-	ctx.fillStyle = 'green';
+		ctx.fillStyle = 'green';
 
-	ctx.fill();
+		ctx.fill();
 
-	ctx.closePath();
-}
-
-function pipeHeight() {
-	for (vari = 0; i < pipeTotal; i++) {
-		var height = 0;
+		ctx.closePath();
 	}
 }
 
@@ -88,8 +96,14 @@ function draw() {
 	drawPipe();
 
 	//birdY += gravity;
+	for (var i = 0; i < pipeTotal; i++) {
+		pipeX[i] -= speed;
+	}
+	if (birdX === pipeX[i]) {
+		pipeX.splice(i, 1);
+	}
 
-	pipeX -= speed;
+	console.log(pipeX);
 }
 
-var game = setInterval(draw, 200);
+var game = setInterval(draw, 100);
