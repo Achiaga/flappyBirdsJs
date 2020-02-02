@@ -97,10 +97,10 @@ function draw() {
 
 	//birdY += gravity;
 	for (var i = 0; i < pipeTotal; i++) {
+		if (birdX === pipeX[i]) {
+			pipeX.splice(i, 1);
+		}
 		pipeX[i] -= speed;
-	}
-	if (birdX === pipeX[i]) {
-		pipeX.splice(i, 1);
 	}
 
 	console.log(pipeX);
