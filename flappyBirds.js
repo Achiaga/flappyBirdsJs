@@ -1,6 +1,6 @@
-varcanvas = document.getElementById('myCanvas');
+var canvas = document.getElementById('myCanvas');
 
-varctx = canvas.getContext('2d');
+var ctx = canvas.getContext('2d');
 
 document.addEventListener('keydown', keyDownEvent);
 
@@ -16,45 +16,47 @@ var birdY = canvas.height / 2;
 
 var pipeWidth = 50;
 
-var pipeHeight = 150;
-
 var pipeX = (3 * canvas.width) / 4;
 
-varpipesTop = [{ x: pipeX, y: 0 }];
+var pipesTop = [{}];
 
-varpipesBottom = [{ x: (3 * canvas.width) / 4, y: canvas.height - pipeHeight }];
+var pipesBottom = [{}];
 
-varcont = canvas.width / 2;
+var cont = 0;
 
-varpipeY = 0;
+var pipeTotal = 6;
 
-varpipeTotal = 1;
+var pipeGap = 150;
 
-varpipeGap = 50;
+var maxRandomTopPipe = canvas.height - pipeGap;
 
-var maxRandomTopPipe = canvas.height - 50 - pipeGap;
+for (var i = 0; i < pipeTotal; i++) {
+	let randomHeight = Math.floor(Math.random() * maxRandomTopPipe);
 
-var topPipeHeight = [];
+	pipesTop.push({
+		x: pipeX + cont,
+
+		y: 0,
+
+		h: randomHeight,
+	});
+
+	pipesBottom.push({
+		x: pipeX + cont,
+
+		y: 100 + randomHeight,
+
+		h: canvas.height - 100 - randomHeight,
+	});
+
+	cont += pipeGap;
+}
 
 //physics
 
 var gravity = 15;
 
 var speed = 20;
-
-//random Pipes
-
-/*for (var i = 0; i < pipeTotal; i++) {
-
-  var randomHeight = Math.floor(Math.random() * maxRandomTopPipe);
-
-  pipeX.push(cont);
-
-  cont += 150;
-
-  topPipeHeight.push(randomHeight);
-
-}*/
 
 function drawBird() {
 	ctx.beginPath();
@@ -69,10 +71,10 @@ function drawBird() {
 }
 
 function drawPipe() {
-	if (pipesTop !== null && pipesTop !== undefined) {
+	for (var i = 0; i < pipeTotal; i++) {
 		ctx.beginPath();
 
-		ctx.rect(pipesTop[0].x, pipesTop[0].y, pipeWidth, pipeHeight);
+		ctx.rect(pipesTop[i].x, pipesTop[i].y, pipeWidth, pipesTop[i].h);
 
 		ctx.fillStyle = 'green';
 
@@ -82,7 +84,7 @@ function drawPipe() {
 
 		ctx.beginPath();
 
-		ctx.rect(pipesBottom[0].x, pipesBottom[0].y, pipeWidth, pipeHeight);
+		ctx.rect(pipesBottom[i].x, pipesBottom[i].y, pipeWidth, pipesBottom[i].h);
 
 		ctx.fillStyle = 'green';
 
@@ -96,26 +98,45 @@ function jump() {
 	birdY -= 40;
 }
 
-function createPipe() {
-	for (var i = 0; i < pipeTotal; i++) {
-		pipesTop.push({ x: pipeX + pipeGap, y: 0 });
+function movePipe() {
+	for (var i = 0; i < pipesTop.length; i++) {
+		pipesTop[i].x -= 3;
 
-		pipeTotal++;
+		pipesBottom[i].x -= 3;
+
+		if (pipesTop[i].x < 1) {
+			let last = 6;
+
+			let lastX = pipesTop[last].x;
+
+			let randomNewHeight = Math.floor(Math.random() * maxRandomTopPipe);
+
+			pipesTop.push({
+				x: lastX + pipeGap,
+
+				y: 0,
+
+				h: randomNewHeight,
+			});
+
+			pipesBottom.push({
+				x: lastX + pipeGap,
+
+				y: 100 + randomNewHeight,
+
+				h: canvas.height - 100 - randomNewHeight,
+			});
+
+			pipesTop.shift();
+
+			pipesBottom.shift();
+		}
 	}
 }
 
-function movePipe() {
-	if (pipesTop !== null && pipesTop !== undefined) {
-		for (var i = 0; i < pipeTotal; i++) {
-			pipesTop[i].x -= 3;
-
-			pipesBottom[i].x -= 3;
-
-			if (pipesTop[i].x < 200) {
-				pipesTop.shift();
-
-				pipeTotal--;
-			}
+function checkCollission() {
+	for (var i = 0; i < pipesTop.length; i++) {
+		if (pipesTop[i].x < birdX + birdSize && pipesTop[i].x > birdX - birdSize) {
 		}
 	}
 }
@@ -137,15 +158,15 @@ function draw() {
 
 	drawBird();
 
-	if (pipeTotal < 10) {
-		createPipe();
-	}
-
 	drawPipe();
 
-	if (pipesTop[0] !== null) {
-		movePipe();
-	}
+	movePipe();
+
+	//checkCollission();
+
+	console.log(pipesTop);
 
 	//birdY += gravity;
 }
+
+var game = setInterval(draw, 100);
