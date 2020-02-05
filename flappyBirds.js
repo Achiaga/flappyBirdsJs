@@ -104,7 +104,7 @@ function movePipe() {
 
 		pipesBottom[i].x -= 3;
 
-		if (pipesTop[i].x < 1) {
+		if (pipesTop[i].x < -pipeWidth / 2) {
 			let last = 6;
 
 			let lastX = pipesTop[last].x;
